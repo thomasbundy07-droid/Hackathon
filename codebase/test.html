@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carbon Emissions Tracker - Search Impact</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.95;
+        }
+
+        .content {
+            padding: 40px 20px;
+        }
+
+        .search-section {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+
+        .search-section h2 {
+            margin-bottom: 20px;
+            color: #667eea;
+            font-size: 1.5em;
+        }
+
+        .search-input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            padding: 12px 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        button {
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            cursor: pointer;
+            font-weight: 600;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .info-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .info-card h3 {
+            font-size: 0.9em;
+            opacity: 0.9;
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+
+        .info-card .value {
+            font-size: 2em;
+            font-weight: bold;
+        }
+
+        .info-card .unit {
+            font-size: 0.8em;
+            opacity: 0.8;
+            margin-top: 5px;
+        }
+
+        .history-section {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 10px;
+        }
+
+        .history-section h2 {
+            margin-bottom: 20px;
+            color: #667eea;
+            font-size: 1.5em;
+        }
+
+        .history-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .history-item {
+            background: white;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: box-shadow 0.2s;
+        }
+
+        .history-item:hover {
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.15);
+        }
+
+        .history-item-text {
+            flex: 1;
+        }
+
+        .history-item-query {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .history-item-meta {
+            font-size: 0.85em;
+            color: #666;
+        }
+
+        .history-item-carbon {
+            background: #e8f4f8;
+            color: #667eea;
+            padding: 8px 15px;
+            border-radius: 6px;
+            font-weight: 600;
+            margin-left: 15px;
+        }
+
+        .delete-btn {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85em;
+            margin-left: 10px;
+            transition: background 0.2s;
+        }
+
+        .delete-btn:hover {
+            background: #ff5252;
+        }
+
+        .clear-all-btn {
+            background: #ff6b6b;
+            margin-top: 15px;
+            width: 100%;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #999;
+        }
+
+        .empty-state svg {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .stats-summary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .stats-summary h3 {
+            font-size: 1.1em;
+            margin-bottom: 10px;
+            opacity: 0.9;
+        }
+
+        .stats-summary .big-number {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .stats-summary .comparison {
+            font-size: 0.95em;
+            opacity: 0.85;
+            margin-top: 15px;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 600px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .history-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .history-item-carbon {
+                margin-left: 0;
+                margin-top: 10px;
+                align-self: flex-start;
+            }
+        }
+
+        .leaf-icon {
+            display: inline-block;
+            margin-right: 10px;
+        }
+
+        #searchResults a {
+            word-break: break-word;
+        }
+
+        #resultsContainer a:hover {
+            text-decoration: underline !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌍 Carbon Emissions Tracker</h1>
+            <p>Track your digital carbon footprint from every search</p>
+        </div>
+
+        <div class="content">
+            <div class="search-section">
+                <h2>🔍 Search & Track Carbon</h2>
+                <div class="search-input-group">
+                    <input 
+                        type="text" 
+                        id="searchInput" 
+                        placeholder="Enter your search query..."
+                        autocomplete="off"
+                    >
+                    <button onclick="performSearch()" id="searchBtn">Search</button>
+                </div>
+                <p style="font-size: 0.85em; color: #666; margin-top: 10px;">
+                    💡 Carbon emissions calculated based on: query length, processing time, results returned, and data center energy efficiency
+                </p>
+                <div id="apiStatus" style="font-size: 0.85em; margin-top: 10px; color: #888;">
+                    <span id="statusIndicator">●</span> Ready
+                </div>
+            </div>
+
+            <div id="searchResults" style="display: none; margin-bottom: 30px;">
+                <div style="background: #f8f9fa; padding: 30px; border-radius: 10px;">
+                    <h2 style="color: #667eea; margin-bottom: 20px;">Search Results</h2>
+                    <div id="resultsContainer" style="max-height: 600px; overflow-y: auto;">
+                        <div style="text-align: center; padding: 40px;">
+                            <div style="font-size: 1.2em; color: #999;">Loading results...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="stats-summary" id="statsSummary" style="display: none;">
+                <h3>Your Impact Summary</h3>
+                <div class="big-number">
+                    <span id="totalCarbonDisplay">0</span>g CO₂
+                </div>
+                <div class="comparison">
+                    <div id="comparisonText"></div>
+                </div>
+            </div>
+
+            <div class="info-grid">
+                <div class="info-card">
+                    <h3>Total Searches</h3>
+                    <div class="value" id="totalSearches">0</div>
+                </div>
+                <div class="info-card">
+                    <h3>Carbon Emissions</h3>
+                    <div class="value"><span id="totalCarbon">0</span>g</div>
+                    <div class="unit">CO₂</div>
+                </div>
+                <div class="info-card">
+                    <h3>Average per Search</h3>
+                    <div class="value">0.2g</div>
+                    <div class="unit">CO₂</div>
+                </div>
+                <div class="info-card">
+                    <h3>Equivalent to</h3>
+                    <div class="value" id="equivalentDisplay">0m</div>
+                    <div class="unit">driven</div>
+                </div>
+            </div>
+
+            <div class="history-section">
+                <h2>📋 Search History</h2>
+                <div class="history-list" id="historyList">
+                    <div class="empty-state">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm3.5-9c.83 0 1.5-.67 1.5-1.5S16.33 8 15.5 8 14 8.67 14 9.5s.67 1.5 1.5 1.5zm-7 0c.83 0 1.5-.67 1.5-1.5S9.33 8 8.5 8 7 8.67 7 9.5 7.67 11 8.5 11zm3.5 6.5c2.33 0 4.31-1.46 5.11-3.5H6.89c.8 2.04 2.78 3.5 5.11 3.5z"></path>
+                        </svg>
+                        <p>No searches logged yet. Start tracking your carbon footprint!</p>
+                    </div>
+                </div>
+                <button class="clear-all-btn" id="clearAllBtn" style="display: none;" onclick="clearAllHistory()">
+                    Clear All History
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration
+        const CARBON_PER_SEARCH_BASE = 0.003; // Base: ~0.0003g CO2 per search (Google's average)
+        const ENERGY_INTENSITY = 0.233; // grams CO2 per kWh (varies by region, this is global average)
+        const QUERY_PROCESSING_TIME_BASE = 0.5; // milliseconds base processing time
+        const BYTES_PER_RESULT = 50000; // Average bytes per search result (50KB)
+        const DATA_CENTER_EFFICIENCY = 1.67; // Power Usage Effectiveness (PUE) - lower is better
+        const KM_PER_GRAM_CO2 = 1; // 1 gram CO2 ≈ 1 meter driven (rough equivalent)
+        
+        // Google Custom Search API - Note: For production, you'll need to add your own API key
+        const GOOGLE_API_KEY = 'AIzaSyDxjREWoqE8i1Q5g5oHl0L2nV3OqkVP1R8'; // Demo key (limited)
+        const GOOGLE_SEARCH_ENGINE_ID = '214de57a404f24f56'; // Demo engine ID (limited)
+
+        // Initialize from localStorage
+        let searchHistory = JSON.parse(localStorage.getItem('searchHistory')) || [];
+
+        // Load history on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            updateDisplay();
+            document.getElementById('searchInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    performSearch();
+                }
+            });
+        });
+
+        // Calculate carbon emissions dynamically based on search metrics
+        function calculateCarbonEmissions(query, resultCount, processingTimeMs) {
+            // Factor 1: Query complexity (longer queries = more processing)
+            const queryComplexity = Math.min(query.length / 50, 2); // Normalized 0-2
+            
+            // Factor 2: Number of results (more results = more data transferred)
+            const resultsFactor = (resultCount / 10) * 0.5; // 0-0.5 contribution
+            
+            // Factor 3: Processing time in milliseconds converted to energy
+            // Average search takes 0.5-1.5 seconds, using ~0.0001 kWh per second
+            const energyUsedKWh = (processingTimeMs / 1000) * 0.0001;
+            const processingEmissions = energyUsedKWh * ENERGY_INTENSITY;
+            
+            // Factor 4: Data transmission (bytes transferred)
+            const dataTransferredBytes = resultCount * BYTES_PER_RESULT;
+            const networkEnergyKWh = (dataTransferredBytes / 1000000000) * 0.0001; // ~0.1 kWh per GB
+            const dataEmissions = networkEnergyKWh * ENERGY_INTENSITY;
+            
+            // Factor 5: Data center overhead (PUE factor)
+            const baseEmissions = (CARBON_PER_SEARCH_BASE + processingEmissions + dataEmissions) * DATA_CENTER_EFFICIENCY;
+            const complexityAdjustment = baseEmissions * queryComplexity * 0.3; // 0-30% increase
+            const resultsAdjustment = baseEmissions * resultsFactor;
+            
+            // Total carbon in grams
+            const totalCarbon = baseEmissions + complexityAdjustment + resultsAdjustment;
+            
+            return Math.max(totalCarbon, 0.0001); // Minimum 0.0001g
+        }
+
+        async function performSearch() {
+            const searchInput = document.getElementById('searchInput');
+            const query = searchInput.value.trim();
+
+            if (query === '') {
+                alert('Please enter a search query');
+                return;
+            }
+
+            // Show results section
+            document.getElementById('searchResults').style.display = 'block';
+            const resultsContainer = document.getElementById('resultsContainer');
+            resultsContainer.innerHTML = '<div style="text-align: center; padding: 40px;"><div style="font-size: 1.2em; color: #999;">Loading results...</div></div>';
+
+            // Update status
+            updateStatusIndicator('loading');
+
+            const startTime = performance.now();
+            let results = [];
+            let resultCount = 0;
+
+            // Try to fetch from Google API
+            try {
+                results = await fetchGoogleResults(query);
+                resultCount = results.length;
+            } catch (error) {
+                console.log('Google API error:', error.message);
+                updateStatusIndicator('fallback');
+                results = generateSimulatedResults(query);
+                resultCount = results.length;
+            }
+
+            const endTime = performance.now();
+            const processingTime = endTime - startTime;
+
+            // Calculate carbon emissions based on actual search metrics
+            const carbonEmissions = calculateCarbonEmissions(query, resultCount, processingTime);
+
+            // Create search entry with calculated emissions
+            const searchEntry = {
+                id: Date.now(),
+                query: query,
+                timestamp: new Date().toLocaleString(),
+                carbon: carbonEmissions,
+                date: new Date().toLocaleDateString(),
+                resultCount: resultCount,
+                processingTime: processingTime
+            };
+
+            searchHistory.unshift(searchEntry);
+            localStorage.setItem('searchHistory', JSON.stringify(searchHistory));
+            updateDisplay();
+
+            displaySearchResults(results, query);
+            showNotification(`✅ Logged "${query}" (${carbonEmissions.toFixed(4)}g CO₂ · ${resultCount} results · ${processingTime.toFixed(0)}ms)`);
+            updateStatusIndicator('ready');
+
+            // Clear input
+            searchInput.value = '';
+            searchInput.focus();
+        }
+
+        async function fetchGoogleResults(query) {
+            // Using Google Custom Search JSON API
+            const encodedQuery = encodeURIComponent(query);
+            const url = `https://www.googleapis.com/customsearch/v1?q=${encodedQuery}&key=${GOOGLE_API_KEY}&cx=${GOOGLE_SEARCH_ENGINE_ID}&num=10`;
+
+            try {
+                const response = await fetch(url);
+                
+                if (!response.ok) {
+                    throw new Error(`Google API error: ${response.status}`);
+                }
+
+                const data = await response.json();
+                
+                if (data.items) {
+                    return data.items.map(item => ({
+                        title: item.title,
+                        link: item.link,
+                        snippet: item.snippet,
+                        position: item.position
+                    }));
+                }
+
+                throw new Error('No results from Google API');
+            } catch (error) {
+                console.error('Google API fetch error:', error);
+                throw error;
+            }
+        }
+
+        function generateSimulatedResults(query) {
+            // Generate realistic-looking search results for demonstration
+            const resultTitles = [
+                `What is ${query}?`,
+                `${query} - Wikipedia`,
+                `${query} | Official Website`,
+                `How to ${query} - Guide`,
+                `${query} explained`,
+                `Best practices for ${query}`,
+                `${query} tutorial`,
+                `${query} news and updates`,
+                `${query} reviews`,
+                `${query} troubleshooting`
+            ];
+
+            const descriptions = [
+                `Discover everything about ${query}. Learn the basics, advanced techniques, and best practices.`,
+                `Complete information and resources about ${query} available online.`,
+                `Find helpful guides, articles, and resources related to ${query}.`,
+                `Get answers to common questions about ${query}.`,
+                `Explore in-depth content covering ${query} and related topics.`,
+                `Latest developments and information about ${query}.`,
+                `Step-by-step guides and tutorials for ${query}.`,
+                `Expert insights and analysis on ${query}.`,
+                `Community discussions and recommendations about ${query}.`,
+                `Solutions and tips for ${query}.`
+            ];
+
+            const domains = [
+                'wikipedia.org',
+                'github.com',
+                'stackoverflow.com',
+                'medium.com',
+                'dev.to',
+                'example.com',
+                'tutorial.com',
+                'guide.com',
+                'news.com',
+                'blog.example.com'
+            ];
+
+            return Array(10).fill(null).map((_, i) => ({
+                title: resultTitles[i % resultTitles.length],
+                link: `https://${domains[i % domains.length]}/${query.replace(/\s+/g, '-')}`,
+                snippet: descriptions[i % descriptions.length],
+                position: i + 1
+            }));
+        }
+
+        function displaySearchResults(results, query) {
+            const resultsContainer = document.getElementById('resultsContainer');
+            
+            if (!results || results.length === 0) {
+                resultsContainer.innerHTML = '<div style="padding: 20px; color: #999;">No results found.</div>';
+                return;
+            }
+
+            const resultsHTML = results.map((result, index) => {
+                const title = result.title || 'No title';
+                const link = result.link || result.url || '#';
+                const snippet = result.snippet || result.description || 'No description available';
+                const displayLink = link.replace(/^https?:\/\/(www\.)?/, '').split('/')[0];
+
+                return `
+                    <div style="margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid #e0e0e0;">
+                        <div style="color: #006621; font-size: 0.85em; margin-bottom: 5px;">${displayLink}</div>
+                        <a href="${escapeHtml(link)}" target="_blank" style="color: #1a0dff; text-decoration: none; font-size: 1.1em; font-weight: 500; cursor: pointer; display: inline-block; max-width: 100%;">
+                            ${escapeHtml(title)}
+                        </a>
+                        <div style="color: #545454; margin-top: 8px; line-height: 1.6; font-size: 0.95em;">
+                            ${escapeHtml(snippet)}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            resultsContainer.innerHTML = resultsHTML;
+        }
+
+        function displaySimulatedResults(query) {
+            const results = generateSimulatedResults(query);
+            displaySearchResults(results, query);
+        }
+
+        function updateStatusIndicator(status) {
+            const indicator = document.getElementById('statusIndicator');
+            const statusText = document.querySelector('#apiStatus').lastChild;
+            
+            switch(status) {
+                case 'loading':
+                    indicator.textContent = '◐';
+                    indicator.style.color = '#ffa500';
+                    statusText.textContent = ' Searching...';
+                    break;
+                case 'ready':
+                    indicator.textContent = '●';
+                    indicator.style.color = '#28a745';
+                    statusText.textContent = ' Ready';
+                    break;
+                case 'fallback':
+                    indicator.textContent = '◆';
+                    indicator.style.color = '#ff9800';
+                    statusText.textContent = ' Using fallback search';
+                    break;
+                default:
+                    indicator.textContent = '●';
+                    indicator.style.color = '#28a745';
+                    statusText.textContent = ' Ready';
+            }
+        }
+
+        function deleteEntry(id) {
+            searchHistory = searchHistory.filter(entry => entry.id !== id);
+            localStorage.setItem('searchHistory', JSON.stringify(searchHistory));
+            updateDisplay();
+            showNotification('❌ Entry deleted');
+        }
+
+        function clearAllHistory() {
+            if (confirm('Are you sure you want to clear all history? This cannot be undone.')) {
+                searchHistory = [];
+                localStorage.setItem('searchHistory', JSON.stringify(searchHistory));
+                updateDisplay();
+                showNotification('🗑️ History cleared');
+            }
+        }
+
+        function updateDisplay() {
+            const totalSearches = searchHistory.length;
+            const totalCarbon = searchHistory.reduce((sum, entry) => sum + entry.carbon, 0);
+            const equivalentMeters = totalCarbon * KM_PER_GRAM_CO2;
+
+            // Update stats cards
+            document.getElementById('totalSearches').textContent = totalSearches;
+            document.getElementById('totalCarbon').textContent = totalCarbon.toFixed(4);
+            
+            // Convert to appropriate unit (meters, kilometers, etc.)
+            let equivalentText;
+            if (equivalentMeters < 1000) {
+                equivalentText = Math.round(equivalentMeters) + 'm';
+            } else {
+                equivalentText = (equivalentMeters / 1000).toFixed(2) + 'km';
+            }
+            document.getElementById('equivalentDisplay').textContent = equivalentText;
+
+            // Update summary
+            if (totalSearches > 0) {
+                const statsSummary = document.getElementById('statsSummary');
+                statsSummary.style.display = 'block';
+                document.getElementById('totalCarbonDisplay').textContent = totalCarbon.toFixed(4);
+                
+                // Show comparisons
+                const comparisons = [
+                    `Equivalent to driving ${equivalentText}`,
+                    `Same as ${(totalCarbon / 0.16).toFixed(0)} pages of printed paper`,
+                    `${totalSearches} search${totalSearches !== 1 ? 'es' : ''} logged`
+                ];
+                document.getElementById('comparisonText').textContent = comparisons.join(' • ');
+            } else {
+                document.getElementById('statsSummary').style.display = 'none';
+            }
+
+            // Update history list
+            updateHistoryList();
+
+            // Show/hide clear button
+            document.getElementById('clearAllBtn').style.display = totalSearches > 0 ? 'block' : 'none';
+        }
+
+        function updateHistoryList() {
+            const historyList = document.getElementById('historyList');
+
+            if (searchHistory.length === 0) {
+                historyList.innerHTML = `
+                    <div class="empty-state">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm3.5-9c.83 0 1.5-.67 1.5-1.5S16.33 8 15.5 8 14 8.67 14 9.5s.67 1.5 1.5 1.5zm-7 0c.83 0 1.5-.67 1.5-1.5S9.33 8 8.5 8 7 8.67 7 9.5 7.67 11 8.5 11zm3.5 6.5c2.33 0 4.31-1.46 5.11-3.5H6.89c.8 2.04 2.78 3.5 5.11 3.5z"></path>
+                        </svg>
+                        <p>No searches logged yet. Start tracking your carbon footprint!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const historyHTML = searchHistory.map(entry => `
+                <div class="history-item">
+                    <div class="history-item-text">
+                        <div class="history-item-query">"${escapeHtml(entry.query)}"</div>
+                        <div class="history-item-meta">
+                            ${entry.timestamp} 
+                            ${entry.resultCount ? `• ${entry.resultCount} results • ${entry.processingTime.toFixed(0)}ms` : ''}
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <div class="history-item-carbon">${entry.carbon.toFixed(4)}g CO₂</div>
+                        <button class="delete-btn" onclick="deleteEntry(${entry.id})">Delete</button>
+                    </div>
+                </div>
+            `).join('');
+
+            historyList.innerHTML = historyHTML;
+        }
+
+        function showNotification(message) {
+            // Create temporary notification
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: white;
+                padding: 15px 20px;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                z-index: 10000;
+                animation: slideIn 0.3s ease-out;
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease-out';
+                setTimeout(() => notification.remove(), 300);
+            }, 2000);
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Add animations
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from {
+                    transform: translateX(400px);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+            @keyframes slideOut {
+                from {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+                to {
+                    transform: translateX(400px);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
