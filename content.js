@@ -36,26 +36,49 @@
     o.id = 'llm-metrics-overlay';
     o.style.cssText = `
       position: fixed;
-      right: 12px;
-      bottom: 12px;
+      top: 16px;
+      right: 16px;
       z-index: 2147483647;
-      background: rgba(0, 0, 0, 0.75);
-      color: #fff;
-      padding: 8px 10px;
-      border-radius: 8px;
-      font-size: 12px;
-      font-family: Arial, Helvetica, sans-serif;
-      max-width: 300px;
-      word-wrap: break-word;
+      background: #ffffff;
+      color: #374151;
+      padding: 16px 18px;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 500;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      width: 220px;
+      line-height: 1.6;
+      text-align: left;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      border: 1px solid #e0e7ff;
     `;
-    o.innerText = 'LLM metrics: waiting...';
+    o.innerHTML = `
+      <div style="font-size: 14px; font-weight: 600; margin-bottom: 12px; color: #1f2937;">Co<sub style="font-size: 10px;">2</sub>conscious</div>
+      <div style="display: grid; grid-template-columns: auto 1fr; gap: 8px 12px; font-size: 12px;">
+        <span style="text-align: right; color: #6b7280;">Energy:</span>
+        <span id="energy-val" style="text-align: left;">—</span>
+        <span style="text-align: right; color: #6b7280;">Water:</span>
+        <span id="water-val" style="text-align: left;">—</span>
+        <span style="text-align: right; color: #6b7280;">Carbon:</span>
+        <span id="carbon-val" style="text-align: left;">—</span>
+      </div>
+    `;
     document.documentElement.appendChild(o);
   }
 
   function updateOverlay(text) {
     ensureOverlay();
     const o = document.getElementById('llm-metrics-overlay');
-    if (o) o.innerText = text;
+    if (o) {
+      const energyVal = o.querySelector('#energy-val');
+      const waterVal = o.querySelector('#water-val');
+      const carbonVal = o.querySelector('#carbon-val');
+      if (energyVal && waterVal && carbonVal) {
+        energyVal.innerText = text.energy || '—';
+        waterVal.innerText = text.water || '—';
+        carbonVal.innerText = text.carbon || '—';
+      }
+    }
   }
 
   // Get model config for emissions calculation
@@ -357,16 +380,17 @@
             const provider = guessProvider();
             const emissions = calculateEmissionsQuick(tokens, tps, state.latency || 0, provider);
             if (emissions) {
-              updateOverlay(
-                `🌱 Energy: ${emissions.energyWh}Wh | Water: ${emissions.waterMl}mL | Carbon: ${emissions.carbonGrams}g CO₂e\n` +
-                `≈${emissions.googleSearches} Google searches | ≈${emissions.phoneChargePercent}% phone charge`
-              );
+              updateOverlay({
+                energy: `${emissions.energyWh} Wh`,
+                water: `${emissions.waterMl} mL`,
+                carbon: `${emissions.carbonGrams} g`
+              });
             } else {
-              updateOverlay(
-                `tokens: ${tokens} | latency: ${Math.round(state.latency || 0)}ms | t/s: ${
-                  tps ? tps.toFixed(1) : 'n/a'
-                }`
-              );
+              updateOverlay({
+                energy: '—',
+                water: '—',
+                carbon: '—'
+              });
             }
             sendMetrics(metrics);
 
