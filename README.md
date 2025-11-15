@@ -1,16 +1,13 @@
-# LLM Response Metrics Chrome Extension
+# Co₂nscious
 
-A lightweight Chrome extension that measures LLM response metrics in real-time on OpenAI and Anthropic chat interfaces.
+Chrome extension that quantifies the environmental impact of LLM conversations on OpenAI Chat and Claude.
 
 ## Features
 
-- **Latency Measurement**: Measures time from send to first assistant token appearance
-- **Token Estimation**: Estimates output tokens using a configurable character-to-token ratio (default: 4 chars/token)
-- **Duration Tracking**: Measures total time from first to last token
-- **Tokens/Second**: Calculates streaming speed (tokens generated per second)
-- **In-Page Overlay**: Shows live metrics in a floating overlay
-- **Popup UI**: Configure settings and view metric history
-- **Debug Mode**: Enable verbose logging for troubleshooting
+- **Emissions Tracking**: Measures energy, water, and carbon emissions for every LLM response
+- **UI**: Displays emissions in a minimalist UI in the top-right corner
+- **Relatable Equivalents**: Shows impact as car miles driven and phone charge percentage
+- **Live Metrics**: Tracks latency, tokens, and tokens/second alongside environmental data
 
 ## How It Works
 
@@ -39,10 +36,10 @@ A lightweight Chrome extension that measures LLM response metrics in real-time o
 
 ## Usage
 
-1. Visit [chat.openai.com](https://chat.openai.com) or [claude.ai](https://claude.ai)
+1. [claude.ai](https://claude.ai)
 2. Send a message to the LLM
-3. Watch for the metrics overlay in the bottom-right corner
-4. Click the extension icon to view the popup with detailed metrics and settings
+3. Watch the Co₂nscious widget appear in the top-right corner with emissions data
+4. Click the extension icon to view detailed metrics in the popup
 
 ### Adjusting Token Ratio
 
@@ -60,48 +57,34 @@ Enable "Enable Debug Logging" in the popup, then open DevTools (Cmd+Option+J) to
 
 ## Supported Sites
 
-- ✅ https://chat.openai.com/*
-- ✅ https://claude.ai/*
-- ✅ https://*.anthropic.com/*
+- https://claude.ai/*
+- https://*.anthropic.com/*
 
 ## Limitations
 
+- **Limited Sited** Currently is only working on claude, hopefully will be expanded to many social medias and other AI platforms.
+- **Emission tracking** All emission tracking is an estimate. Exact values are pretty much impossible to get at the moment.
+
 - **Heuristic-based**: Uses DOM observation and simple text heuristics (not perfect)
 - **Approximate token counts**: Uses 4 chars/token ratio by default (not exact)
-- **Provider-specific**: Works best with OpenAI Chat and Anthropic/Claude; may need tuning for other providers
-- **Does not use official tokenizers**: For exact token counts, would need integration with tiktoken or similar
+
 
 ## How Metrics Are Calculated
 
-```
-Latency = Time when first assistant message text appears - Time when user pressed Send
-Duration = Time when assistant stops responding (no text changes for 1 second) - Time first text appeared
-Tokens = Length of response text / Token ratio (default 4)
-Tokens/Second = Tokens / (Duration in seconds)
-```
+**Emissions** are calculated using the Jegham et al. (2025) methodology based on:
+- Inference time (latency + generation time)
+- GPU/CPU power draw
+- Model-specific hardware specifications
+- Data center PUE and regional carbon intensity
+
+**Equivalents** help quantify impact:
+- **Car miles**: CO₂ (grams) / 400
+- **Phone charge**: (Energy Wh / 14.8) × 100%
 
 ## Future Improvements
 
-- [ ] Integrate official tokenizers (tiktoken, claude-tokenizer)
-- [ ] Support for more LLM providers
-- [ ] Metrics history UI with charts
-- [ ] CSV/JSON export
-- [ ] Per-provider optimized selectors
-- [ ] Distinguishing between thinking blocks and actual responses
-- [ ] More accurate latency (first character appearance vs first visible text)
-
-## Troubleshooting
-
-**Extension won't load**: Make sure you're loading from the correct directory with all files present (manifest.json, content.js, etc.)
-
-**Metrics show "waiting..." forever**: 
-- Check DevTools console (Cmd+Option+J) for errors
-- Enable debug mode to see if message nodes are being detected
-- The selectors for your provider might not match the current DOM structure
-
-**Token counts seem wrong**:
-- Adjust the token ratio in the popup settings
-- Note that this is a heuristic approximation, not exact tokenization
+- [ ] Support for more LLM providers (Gemini, Mistral, etc.) and social medias
+- [ ] Historical analytics and trends
 
 ## License
 
