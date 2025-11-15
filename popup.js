@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const ratioInput = document.getElementById('ratio');
   const saveBtn = document.getElementById('save');
   const lastDiv = document.getElementById('last');
+  const emissionsDiv = document.getElementById('emissions');
   const debugCheckbox = document.getElementById('debug');
 
   // Load saved settings
@@ -50,7 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // Display a metric in the UI
+  // Display a metric in the UI, including emissions
   function displayMetric(metric) {
     const lines = [
       `provider: ${metric.provider || 'unknown'}`,
@@ -61,6 +62,33 @@ document.addEventListener('DOMContentLoaded', () => {
       `timestamp: ${new Date(metric.timestamp).toLocaleTimeString()}`
     ];
     lastDiv.innerText = lines.join('\n');
+
+    // Calculate emissions
+    if (typeof calculateEmissions === 'function' && typeof formatEmissionsForDisplay === 'function' && metric.estimatedTokenCount && metric.tokensPerSecond) {
+      // Guess model name from provider
+      let modelName = metric.provider;
+      if (modelName === 'openai') modelName = 'gpt-4o';
+      if (modelName === 'anthropic') modelName = 'claude-3.7-sonnet';
+      
+      const emissions = calculateEmissions({
+        outputTokens: metric.estimatedTokenCount,
+        tps: metric.tokensPerSecond,
+        latencyMs: metric.latencyMs || 0,
+        modelName
+      });
+      
+      const display = formatEmissionsForDisplay(emissions);
+      emissionsDiv.innerHTML = `
+        <b>🌱 Emissions:</b><br>
+        <span>Energy: ${display.energyDisplay}</span><br>
+        <span>Water: ${display.waterDisplay}</span><br>
+        <span>Carbon: ${display.carbonDisplay}</span><br>
+        <span style="color:#2563eb;">${display.googleEquivalent}</span><br>
+        <span style="color:#2563eb;">${display.phoneChargePercent}</span>
+      `;
+    } else {
+      emissionsDiv.innerHTML = '';
+    }
   }
 
   // Listen for storage changes
