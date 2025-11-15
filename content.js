@@ -58,6 +58,50 @@
     if (o) o.innerText = text;
   }
 
+  // Get model config for emissions calculation
+  function getModelConfigForProvider(provider) {
+    const configs = {
+      'openai': { name: 'gpt-4o', p_gpu_kw: 10.20, p_non_gpu_kw: 1.02, u_gpu: 0.065, u_non_gpu: 0.0625, pue: 1.12, wue_site: 0.30, wue_source: 3.142, cif: 0.3528 },
+      'anthropic': { name: 'claude-3.7-sonnet', p_gpu_kw: 10.20, p_non_gpu_kw: 1.02, u_gpu: 0.065, u_non_gpu: 0.0625, pue: 1.14, wue_site: 0.18, wue_source: 3.142, cif: 0.385 }
+    };
+    return configs[provider] || configs.anthropic;
+  }
+
+  // Calculate emissions inline
+  function calculateEmissionsQuick(outputTokens, tps, latencyMs, provider) {
+    if (!outputTokens || !tps) return null;
+    
+    const config = getModelConfigForProvider(provider);
+    const latencySec = Math.max(0, latencyMs / 1000);
+    const generationTimeSec = outputTokens / tps;
+    const totalTimeSec = latencySec + generationTimeSec;
+    const inferenceTimeHours = totalTimeSec / 3600;
+    
+    const gpuPower = config.p_gpu_kw * config.u_gpu;
+    const nonGpuPower = config.p_non_gpu_kw * config.u_non_gpu;
+    const powerDrawKw = gpuPower + nonGpuPower;
+    
+    const energyKwh = inferenceTimeHours * powerDrawKw * config.pue;
+    const energyWh = energyKwh * 1000;
+    
+    const itEnergyKwh = energyKwh / config.pue;
+    const waterOnSiteLiters = itEnergyKwh * config.wue_site;
+    const waterSourceLiters = energyKwh * config.wue_source;
+    const waterTotalLiters = waterOnSiteLiters + waterSourceLiters;
+    const waterMl = waterTotalLiters * 1000;
+    
+    const carbonKg = energyKwh * config.cif;
+    const carbonGrams = carbonKg * 1000;
+    
+    return {
+      energyWh: energyWh.toFixed(2),
+      waterMl: waterMl.toFixed(1),
+      carbonGrams: carbonGrams.toFixed(2),
+      googleSearches: Math.round(energyWh / 0.30),
+      phoneChargePercent: ((energyWh / 5) * 100).toFixed(1)
+    };
+  }
+
   // Heuristic: detect when user sends a message by listening for Enter (no shift) in inputs
   // and clicks on buttons that look like Send. This won't catch every UI, but is a good start.
   let lastSend = null;
@@ -308,11 +352,22 @@
 
             console.log('[LLM-metrics] metrics finalized:', metrics);
             debugLog('metrics finalized:', metrics);
-            updateOverlay(
-              `tokens: ${tokens} | latency: ${Math.round(state.latency || 0)}ms | t/s: ${
-                tps ? tps.toFixed(1) : 'n/a'
-              }`
-            );
+            
+            // Calculate and display emissions in the overlay
+            const provider = guessProvider();
+            const emissions = calculateEmissionsQuick(tokens, tps, state.latency || 0, provider);
+            if (emissions) {
+              updateOverlay(
+                `🌱 Energy: ${emissions.energyWh}Wh | Water: ${emissions.waterMl}mL | Carbon: ${emissions.carbonGrams}g CO₂e\n` +
+                `≈${emissions.googleSearches} Google searches | ≈${emissions.phoneChargePercent}% phone charge`
+              );
+            } else {
+              updateOverlay(
+                `tokens: ${tokens} | latency: ${Math.round(state.latency || 0)}ms | t/s: ${
+                  tps ? tps.toFixed(1) : 'n/a'
+                }`
+              );
+            }
             sendMetrics(metrics);
 
             // Clean up this node from tracking
