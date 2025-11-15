@@ -53,13 +53,13 @@
       border: 1px solid #e0e7ff;
     `;
     o.innerHTML = `
-      <div style="font-size: 14px; font-weight: 600; margin-bottom: 12px; color: #1f2937;">Co<sub style="font-size: 10px;">2</sub>conscious</div>
+      <div style="font-size: 14px; font-weight: 600; margin-bottom: 12px; color: #1f2937;">Co<sub style="font-size: 10px;">2</sub>nscious</div>
       <div style="display: grid; grid-template-columns: auto 1fr; gap: 8px 12px; font-size: 12px; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid #e5e7eb;">
-        <span style="text-align: right; color: #6b7280;">Energy:</span>
+        <span style="text-align: right; color: #6b7280;">⚡ Energy:</span>
         <span id="energy-val" style="text-align: left;">—</span>
-        <span style="text-align: right; color: #6b7280;">Water:</span>
+        <span style="text-align: right; color: #6b7280;">💧 Water:</span>
         <span id="water-val" style="text-align: left;">—</span>
-        <span style="text-align: right; color: #6b7280;">Carbon:</span>
+        <span style="text-align: right; color: #6b7280;">🪨 Carbon:</span>
         <span id="carbon-val" style="text-align: left;">—</span>
       </div>
       <div style="display: grid; grid-template-columns: auto 1fr; gap: 8px 12px; font-size: 12px;">
@@ -134,7 +134,7 @@
       energyWh: energyWh.toFixed(2),
       waterMl: waterMl.toFixed(1),
       carbonGrams: carbonGrams.toFixed(2),
-      carMiles: carMiles.toFixed(2),
+      carMiles: carMiles.toFixed(4),
       phoneChargePercent: phoneChargePercent.toFixed(1),
       googleSearches: Math.round(energyWh / 0.30),
       phoneChargePercent: ((energyWh / 5) * 100).toFixed(1)
