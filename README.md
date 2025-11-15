@@ -8,7 +8,7 @@ This is a sample submission repository for Tri-Co Hackathon 2025. You can use th
 
 ### Team Name
 
-*Your name here! & best way to contact you all during the Hack*
+Co2nscious
 
 ### Team Members
 
@@ -18,23 +18,25 @@ This is a sample submission repository for Tri-Co Hackathon 2025. You can use th
 
 ### Project Description
 
-*A clear statement of the challenges/issues/problems/gaps your project engages as well as a brief, high-level description of how your project engage the areas you've identified. What is the value of your approach? Who are the intended users?*
+AI queries, internet searches, and online video streaming consume massive amounts of energy and leave a carbon footprint most users never see. We are looking to make a chrome extension that quantifies the environmental impact of your AI and internet use. While a user is using AI models, social media, or streaming services, Co2nscious will display a widget with live and accuracte emissions calculations of carbon dioxide, water usage and energy usage.
 
 ### Protoype Summary
 
-*Describe the basic functionality of your prototype. What are the features you were able to implement? What features would you like to implement?*
+Our prototype displays the emissions information for AI models only. It displays a small widget with data about emissions and digestable equivalents.
+
 
 ### Live URLs
 
-*List any URLs relevant to demonstrating your prototype*
+The only URLs availaible for this is our source code on github. You can see the demo in our slideshow though.
 
 ### Presentation
 
-*List any links to your presentation or any related visuals you want to share.*
+[*List any links to your presentation or any related visuals you want to share.*](https://docs.google.com/presentation/d/1McthGHV9SPiwRKKlRL2OEAnRC40NrRm42I7ejrf3zmI/edit?slide=id.g3a3b5d6a9c8_0_1060#slide=id.g3a3b5d6a9c8_0_1060)
 
 ### Next Steps
 
-*What do you need to do next to turn this prototype into a working solution?*
+1.Expand the platforms to social media and other streaming services such as Netflix, Instagram, Tiktok, etc.
+2.Create a lifetime emissions tracker/historical data of internet use and emissions.
 
 ### License
 
