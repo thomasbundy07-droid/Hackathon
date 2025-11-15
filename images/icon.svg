@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <rect width="128" height="128" fill="#1f2937" rx="24"/>
+  <g transform="translate(32, 32)">
+    <!-- Represents LLM response metrics visualization -->
+    <rect x="0" y="48" width="8" height="32" fill="#3b82f6" rx="2"/>
+    <rect x="16" y="32" width="8" height="48" fill="#10b981" rx="2"/>
+    <rect x="32" y="20" width="8" height="60" fill="#f59e0b" rx="2"/>
+    <rect x="48" y="10" width="8" height="70" fill="#ef4444" rx="2"/>
+  </g>
+</svg>

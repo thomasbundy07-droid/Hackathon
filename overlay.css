@@ -1,0 +1,19 @@
+/* overlay.css */
+/* Styles for the floating metrics overlay injected into chat pages */
+
+.llm-metrics-overlay {
+  position: fixed !important;
+  right: 12px !important;
+  bottom: 12px !important;
+  z-index: 2147483647 !important;
+  background: rgba(0, 0, 0, 0.8) !important;
+  color: #fff !important;
+  padding: 10px 12px !important;
+  border-radius: 6px !important;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif !important;
+  font-size: 12px !important;
+  line-height: 1.4 !important;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
+  max-width: 250px !important;
+  word-wrap: break-word !important;
+}
