@@ -1,6 +1,6 @@
 # Co₂nscious
 
-Chrome extension that quantifies the environmental impact of LLM conversations on OpenAI Chat and Claude.
+Chrome extension that quantifies the environmental impact of AI and internet use (Currently on implemented for AI use).
 
 ## Features
 
