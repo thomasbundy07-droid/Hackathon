@@ -54,13 +54,19 @@
     `;
     o.innerHTML = `
       <div style="font-size: 14px; font-weight: 600; margin-bottom: 12px; color: #1f2937;">Co<sub style="font-size: 10px;">2</sub>conscious</div>
-      <div style="display: grid; grid-template-columns: auto 1fr; gap: 8px 12px; font-size: 12px;">
+      <div style="display: grid; grid-template-columns: auto 1fr; gap: 8px 12px; font-size: 12px; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid #e5e7eb;">
         <span style="text-align: right; color: #6b7280;">Energy:</span>
         <span id="energy-val" style="text-align: left;">—</span>
         <span style="text-align: right; color: #6b7280;">Water:</span>
         <span id="water-val" style="text-align: left;">—</span>
         <span style="text-align: right; color: #6b7280;">Carbon:</span>
         <span id="carbon-val" style="text-align: left;">—</span>
+      </div>
+      <div style="display: grid; grid-template-columns: auto 1fr; gap: 8px 12px; font-size: 12px;">
+        <span style="text-align: right; color: #6b7280;">Car miles:</span>
+        <span id="miles-val" style="text-align: left;">—</span>
+        <span style="text-align: right; color: #6b7280;">Phone charge:</span>
+        <span id="phone-val" style="text-align: left;">—</span>
       </div>
     `;
     document.documentElement.appendChild(o);
@@ -73,10 +79,14 @@
       const energyVal = o.querySelector('#energy-val');
       const waterVal = o.querySelector('#water-val');
       const carbonVal = o.querySelector('#carbon-val');
-      if (energyVal && waterVal && carbonVal) {
+      const milesVal = o.querySelector('#miles-val');
+      const phoneVal = o.querySelector('#phone-val');
+      if (energyVal && waterVal && carbonVal && milesVal && phoneVal) {
         energyVal.innerText = text.energy || '—';
         waterVal.innerText = text.water || '—';
         carbonVal.innerText = text.carbon || '—';
+        milesVal.innerText = text.miles || '—';
+        phoneVal.innerText = text.phone || '—';
       }
     }
   }
@@ -116,10 +126,16 @@
     const carbonKg = energyKwh * config.cif;
     const carbonGrams = carbonKg * 1000;
     
+    // Calculate equivalents
+    const carMiles = carbonGrams / 400;
+    const phoneChargePercent = (energyWh / 14.8) * 100;
+    
     return {
       energyWh: energyWh.toFixed(2),
       waterMl: waterMl.toFixed(1),
       carbonGrams: carbonGrams.toFixed(2),
+      carMiles: carMiles.toFixed(2),
+      phoneChargePercent: phoneChargePercent.toFixed(1),
       googleSearches: Math.round(energyWh / 0.30),
       phoneChargePercent: ((energyWh / 5) * 100).toFixed(1)
     };
@@ -383,13 +399,17 @@
               updateOverlay({
                 energy: `${emissions.energyWh} Wh`,
                 water: `${emissions.waterMl} mL`,
-                carbon: `${emissions.carbonGrams} g`
+                carbon: `${emissions.carbonGrams} g`,
+                miles: `${emissions.carMiles} mi`,
+                phone: `${emissions.phoneChargePercent}%`
               });
             } else {
               updateOverlay({
                 energy: '—',
                 water: '—',
-                carbon: '—'
+                carbon: '—',
+                miles: '—',
+                phone: '—'
               });
             }
             sendMetrics(metrics);
